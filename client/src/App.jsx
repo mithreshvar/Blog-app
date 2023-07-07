@@ -1,11 +1,11 @@
 import './App.css'
-import Login from './components/login'
+import Blog from './components/Blog'
 
 function App() {
 
     return (
         <>
-            <Login/>
+            <Blog/>
         </>
     )
 }
