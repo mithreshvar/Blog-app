@@ -4,25 +4,25 @@ const requireAuth = require('../middleware/requireAuth')
 
 const recordRoutes = express.Router();
 
+// GET all Blogs
+recordRoutes.get('/', getBlogs);
+
+// GET a Blog
+recordRoutes.get('/:id', getBlog);
+
 // require auth for all workout routes
 recordRoutes.use(requireAuth)
 
-// GET all PatientProfiles
-recordRoutes.get('/', getBlogs);
-
-// GET My PatientProfile
+// GET My Blog
 recordRoutes.get('/my', getMyBlog);
 
-// GET a PatientProfile
-recordRoutes.get('/:id', getBlog);
-
-// POST a new PatientProfile
+// POST a new Blog
 recordRoutes.post('/', createBlog);
 
-// DELETE a PatientProfile
+// DELETE a Blog
 recordRoutes.delete('/:id', deleteBlog);
 
-// UPDATE a PatientProfile
+// UPDATE a Blog
 recordRoutes.patch('/:id', updateBlog);
 
 module.exports = recordRoutes;

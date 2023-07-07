@@ -36,7 +36,7 @@ const getMyBlog = async (req, res) => {
 // create a Blog
 const createBlog = async (req, res) => {
     const user_id = req.user._id
-    const { title, content } = req.body;
+    const { title, content, tags } = req.body;
 
     let emptyFields = []
 
@@ -46,6 +46,9 @@ const createBlog = async (req, res) => {
     if (!content) {
         emptyFields.push('content')
     }
+    if (!tags) {
+        emptyFields.push('tags')
+    }
 
     if (emptyFields.length > 0) {
         return res.status(400).json({ error: 'Missing Fields', emptyFields })
@@ -54,7 +57,7 @@ const createBlog = async (req, res) => {
     // add doc to db
     try {
 
-        const blog = await Blog.create({ title, content, user_id });
+        const blog = await Blog.create({ title, content, tags, user_id });
         res.status(200).json(blog);
     } catch (error) {
         res.status(400).json({ error: error.message });
