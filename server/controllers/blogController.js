@@ -36,7 +36,9 @@ const getMyBlog = async (req, res) => {
 // create a Blog
 const createBlog = async (req, res) => {
     const user_id = req.user._id
-    const { title, content, tags } = req.body;
+    const userName = req.user.userName
+    console.log(req.user)
+    const { title, content } = req.body; //tags,
 
     let emptyFields = []
 
@@ -46,8 +48,11 @@ const createBlog = async (req, res) => {
     if (!content) {
         emptyFields.push('content')
     }
-    if (!tags) {
-        emptyFields.push('tags')
+    // if (!tags) {
+    //     emptyFields.push('tags')
+    // }
+    if (!userName) {
+        emptyFields.push('userName')
     }
 
     if (emptyFields.length > 0) {
@@ -57,7 +62,7 @@ const createBlog = async (req, res) => {
     // add doc to db
     try {
 
-        const blog = await Blog.create({ title, content, tags, user_id });
+        const blog = await Blog.create({ title, content, user_id, userName }); //tags,
         res.status(200).json(blog);
     } catch (error) {
         res.status(400).json({ error: error.message });
