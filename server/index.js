@@ -8,13 +8,15 @@ const path = require("path");
 const userRoutes = require('./routes/user');
 const blogRoutes = require('./routes/blog');
 const commentRoutes = require('./routes/comment');
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = process.env.PORT;
 
 // middlewares
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}))
 
 
 // // Pick up React index.html file
