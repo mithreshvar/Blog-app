@@ -1,12 +1,17 @@
 import { UserAuth } from "../../context/AuthContext";
 import comments from "../../assets/comment.svg"
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import NavBar from "../NavBar";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Blog() {
 
-    const { blogData, setBlogData } = UserAuth()
+    const { user, blogData, setBlogData, setEditData } = UserAuth()
+    const navigate = useNavigate()
     const { id } = useParams()
+
+    const isAuthor = user?.userName === blogData?.userName;
 
     if (!blogData.content) {
         const fetchData = async () => {
@@ -42,6 +47,33 @@ export default function Blog() {
         fetchData();
     }
 
+    const deleteBlog = async () => {
+
+        if (confirm("Are you Sure to DELETE this blog?")){
+            try{
+                const response = await fetch(`http://localhost:8082/api/blog/${id}`,{
+                    method: 'DELETE',
+                    headers: {
+                        "Authorization": `Bearer ${user.token}`
+                    }
+                });
+                let json = await response.json();
+    
+                if (response.ok) {
+                    toast.success('Blog Deleted')
+                    setTimeout(()=>navigate('/'),4000)
+                }
+                else {
+                    console.log(json.error)
+                }
+            }
+            catch(err) {
+                console.log(err.message);
+            }
+        }
+
+    }
+
     return(
         <>
             <NavBar/>
@@ -52,8 +84,12 @@ export default function Blog() {
                     <div className="text-[42px] font-semibold w-fit " >{blogData.title}</div>
 
                     <div className='flex font-medium '>{blogData.userName} <span className='whitespace-pre text-[#757575] ' >{` . ${blogData.month} ${blogData.date}${blogData.year}`}</span></div>
-                    <div className='w-full p-[12px] px-[25px] border-y-[2px] mt-[10px] border-[#f2f2f2] ' >
+                    <div className='w-full p-[12px] px-[25px] border-y-[2px] mt-[10px] border-[#f2f2f2] flex justify-between ' >
                         <img src={comments} alt='' className="h-[20px] w-[20px] [transform:scaleX(-1)] "/>
+                        {isAuthor && <div className="flex gap-x-[15px]">
+                            <Link to={`/edit/${blogData._id}`} onClick={()=>setEditData({title: blogData.title, content: blogData.content, userName: blogData.userName})} >Edit</Link>
+                            <div className="cursor-pointer" onClick={()=>{deleteBlog()}}>Delete</div>
+                        </div>}
                     </div>
 
                     <div className='text-[22px] px-[10px] mt-[50px] w-fit' >
@@ -63,7 +99,18 @@ export default function Blog() {
                     <div className='w-full h-0 border-[1px] border-[#E6E6E6] mt-[50px] ' />
 
                 </div>
-
+                <ToastContainer
+                    position="bottom-left"
+                    limit={1}
+                    autoClose={3000}
+                    hideProgressBar
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    pauseOnHover
+                    theme="dark"
+                />
             </div>
         </>
     )

@@ -1,50 +1,98 @@
-import { useRef } from "react";
+/* eslint-disable react/prop-types */
+
+import { useEffect, useRef } from "react";
 import NavBar from "../NavBar";
 import { UserAuth } from "../../context/AuthContext";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 
-export default function Create() {
+export default function Create({ edit=false }) {
 
-    const { user } = UserAuth()
+    let {id} = useParams()
+    const { user, editData } = UserAuth()
     const navigate = useNavigate()
 
     const titleRef = useRef()
     const contentRef = useRef()
 
+    useEffect(()=>{
+        if (editData?.userName && editData?.userName != user.userName){
+            navigate('/')
+        }
+
+        if (edit) {
+            titleRef.current.value = editData?.title
+            contentRef.current.value = editData?.content
+        }
+    },[editData.title, titleRef, contentRef])
+
+
     async function createBlog() {
     
         if (titleRef.current.value.trim() && contentRef.current.value.trim()){
     
-            try{
-                const response = await fetch(`http://localhost:8082/api/blog/`, {
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${user.token}`
-                    },
-                    body: JSON.stringify({
-                        title: titleRef.current.value,
-                        content: contentRef.current.value
-                    })
-                });
-                const json = await response.json();
-        
-                if (response.ok) {
-                    toast.success('Blog Published')
-                    console.log(json)
-                    setTimeout(()=>navigate('/'),4000)
-                }
-                else {
-                    console.log(json.error)
-                }
-            }
-            catch(err) {
-                console.log(err.message);
-            }
+            if (edit) {
 
+                try{
+                    const response = await fetch(`http://localhost:8082/api/blog/${id}`, {
+                        method:"PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${user.token}`
+                        },
+                        body: JSON.stringify({
+                            title: titleRef.current.value,
+                            content: contentRef.current.value
+                        })
+                    });
+                    const json = await response.json();
+            
+                    if (response.ok) {
+                        toast.success('Blog Updated!')
+                        console.log(json)
+                        setTimeout(()=>navigate('/'),4000)
+                    }
+                    else {
+                        console.log(json.error)
+                    }
+                }
+                catch(err) {
+                    console.log(err.message);
+                }
+
+
+            }   
+            else { 
+                try{
+                    const response = await fetch(`http://localhost:8082/api/blog/`, {
+                        method:"POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${user.token}`
+                        },
+                        body: JSON.stringify({
+                            title: titleRef.current.value,
+                            content: contentRef.current.value
+                        })
+                    });
+                    const json = await response.json();
+            
+                    if (response.ok) {
+                        toast.success('Blog Published')
+                        console.log(json)
+                        setTimeout(()=>navigate('/'),4000)
+                    }
+                    else {
+                        console.log(json.error)
+                    }
+                }
+                catch(err) {
+                    console.log(err.message);
+                }
+
+            }
         }
         else {
             toast.error("Fields Cannot be empty!")
@@ -63,7 +111,7 @@ export default function Create() {
                     <h1 className="text-[22px] ">Content :</h1>
                     <textarea className="h-[300px] w-full border-2 border-[#E6E6E6] rounded-[10px]  p-[20px]  " ref={contentRef} />
                     
-                    <button onClick={createBlog} className="cursor-pointer bg-[#6ec825] text-white border-2 w-[120px] h-[50px] text-[22px] font-medium rounded-[10px] self-center hover:bg-[#80e130] ">Create</button>
+                    <button onClick={createBlog} className="cursor-pointer bg-[#6ec825] text-white border-2 w-[120px] h-[50px] text-[22px] font-medium rounded-[10px] self-center hover:bg-[#80e130] ">{(edit)?"Update":"Create"}</button>
                     <ToastContainer
                         position="bottom-left"
                         limit={1}

@@ -1,10 +1,10 @@
 
-import BlogPreview from "./BlogPreview";
 import { UserAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import NavBar from "../NavBar";
+import BlogPreview from "../Home/BlogPreview";
 
-export default function Home() {
+export default function MyPages() {
 
     const { user } = UserAuth()
     const [ blogPreviews, setBlogPreviews ] = useState([])
@@ -13,11 +13,15 @@ export default function Home() {
     useEffect(()=>{
 
         const fetchData = async () => {
-            
+                    
             try{
-                const response = await fetch(`http://localhost:8082/api/blog/`);
+                const response = await fetch(`http://localhost:8082/api/blog/my`,{
+                    headers: {
+                        "Authorization": `Bearer ${user.token}`
+                    }
+                });
                 const json = await response.json();
-    
+
                 if (response.ok) {
                     setBlogPreviews(json)
                 }

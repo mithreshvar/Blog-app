@@ -25,12 +25,17 @@ const getBlog = async (req, res) => {
 const getMyBlog = async (req, res) => {
     const user_id = req.user._id
 
-    const blog = await Blog.find({ user_id }).sort({ createdAt: -1 });
-
-    if (!blog) {
-        return res.status(404).json({ error: "No such user" });
+    try{
+        const blog = await Blog.find({ user_id:user_id }).sort({ createdAt: -1 });
+    
+        if (!blog) {
+            return res.status(404).json({ error: "No such user" });
+        }
+        res.status(200).json(blog);
     }
-    res.status(200).json(blog);
+    catch(err) {
+        console.log(err.message)
+    }
 }
 
 // create a Blog

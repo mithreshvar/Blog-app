@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
 // import add from '../assets/add.svg'
@@ -17,7 +18,7 @@ export default function NavBar() {
                     ?
                         <>
                             <Link to ='/create'>Write</Link>
-                            <div>{user.userName}</div>
+                            <Link to = '/my'>{user.userName}</Link>
                             <div className="cursor-pointer" onClick={()=>logout()}>Log Out</div>
                         </>
                     :
